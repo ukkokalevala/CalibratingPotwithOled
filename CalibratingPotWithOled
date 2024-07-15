@@ -1,0 +1,48 @@
+#include <Wire.h>
+#include <Adafruit_GFX.h>
+#include <Adafruit_SSD1306.h>
+
+#define SCREEN_WIDTH 128 // OLED display width, in pixels
+#define SCREEN_HEIGHT 64 // OLED display height, in pixels
+#define OLED_RESET    -1 // Reset pin # (or -1 if sharing Arduino reset pin)
+Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
+
+void setup() {
+  // Initialize serial communication
+  Serial.begin(115200);
+
+  // Initialize OLED display
+  if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) { // Address 0x3C for 128x64
+    Serial.println(F("SSD1306 allocation failed"));
+    for(;;);
+  }
+  display.display();
+  delay(2000); // Pause for 2 seconds
+
+  // Clear the buffer
+  display.clearDisplay();
+}
+
+void loop() {
+  int potValue = analogRead(A0); // Read the potentiometer value
+  float voltage = potValue * (5 / 1023.0); // Convert to voltage
+
+  // Print the potentiometer value and voltage to the Serial Monitor
+  Serial.print("Potentiometer Value: ");
+  Serial.print(potValue);
+  Serial.print("\tVoltage: ");
+  Serial.println(voltage);
+
+  // Display the potentiometer value and voltage on the OLED
+  display.clearDisplay();
+  display.setTextSize(2);             // Normal 1:1 pixel scale
+  display.setTextColor(SSD1306_WHITE); // Draw white text
+  display.setCursor(0,0);             // Start at top-left corner
+  display.print("Value: ");
+  display.println(potValue);
+  display.print("Voltage: ");
+  display.println(voltage, 2);
+  display.display();
+
+  delay(500); // Wait for half a second
+}
